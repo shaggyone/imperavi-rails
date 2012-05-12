@@ -1,14 +1,14 @@
 /*
 	Redactor v7.2.0
 	Updated 20.11.2011
-	
+
 	In English http://imperavi.com/
-	In Russian http://imperavi.ru/	
- 
+	In Russian http://imperavi.ru/
+
 	Copyright (c) 2009-2012, Imperavi Ltd.
 	Dual licensed under the MIT or GPL Version 2 licenses.
-	
-	Usage: $('#content').redactor();	
+
+	Usage: $('#content').redactor();
 */
 
 var isCtrl = false;
@@ -40,19 +40,19 @@ function detectAndroidWebKit() {
    return false;
 }
 
-// redactor 
+// redactor
 (function($){
-	// Initialization	
-	$.fn.redactor = function(options) {				
+	// Initialization
+	$.fn.redactor = function(options) {
 		if (isiOS() || detectAndroid() || detectAndroidWebKit()) return false;
-		var obj = new Construct(this, options);	
+		var obj = new Construct(this, options);
 		obj.init();
 		return obj;
 	};
-	
-	// Options and variables	
+
+	// Options and variables
 	function Construct(el, options) {
-		var defaultOptions = {	
+		var defaultOptions = {
 			air                 : false,
 			autosave            : false, // false or url
 			interval            : 20,    // seconds
@@ -118,7 +118,7 @@ function detectAndroidWebKit() {
 
 		$.extend(defaultOptions, defaultPaths);
 		this.opts = $.extend(defaultOptions,options);
-		
+
 		this.$el = $(el);
 	};
 
@@ -126,24 +126,24 @@ function detectAndroidWebKit() {
 	Construct.prototype = {
 		init: function() {
 			if (this.opts.air) this.opts.toolbar = 'air';
-			
+
 			// include lang and toolbar
 			this.include();
-					
+
 			// sizes and id
 	   		this.frameID = this.$el.attr('id');
 	   		this.width   = this.$el.css('width');
-	   		this.height  = this.$el.css('height'); 
-	   		
+	   		this.height  = this.$el.css('height');
+
 	   		// modal overlay
 	   		if ($('#redactor_imp_modal_overlay').size() == 0) {
 		   		this.overlay = $('<div id="redactor_imp_modal_overlay" style="display: none;"></div>');
 		   		$('body').prepend(this.overlay);
 		   	}
-	   		
+
 	   		// create container
 			this.box = $('<div id="imp_redactor_box_' + this.frameID + '" style="width: ' + this.width + ';" class="imp_redactor_box imp_redactor_box"></div>');
-		
+
 			// air box
 			if (this.opts.air) {
 				this.air = $('<div id="imp_redactor_air_' + this.frameID + '" class="redactor_air" style="display: none;"></div>');
@@ -151,9 +151,9 @@ function detectAndroidWebKit() {
 
 	 		// create iframe
 			this.frame = $('<iframe frameborder="0" marginheight="0" marginwidth="0" vspace="0" hspace="0" scrolling="auto"  id="imp_redactor_frame_' + this.frameID + '" style="height: ' + this.height + ';" class="imp_redactor_frame"></iframe>');
-	   	
-			this.$el.hide();	
-					   		   	
+
+			this.$el.hide();
+
 			// append box and frame
 			$(this.box).insertAfter(this.$el).append(this.frame).append(this.$el);
 
@@ -164,15 +164,15 @@ function detectAndroidWebKit() {
 			if (this.opts.resize) {
 				this.resizer = $('<div id="imp_redactor_resize' + this.frameID + '" class="imp_redactor_resize"><div></div></div>');
 				$(this.box).append(this.resizer);
-	
+
 	            $(this.resizer).mousedown(function(e) { this.initResize(e) }.bind2(this));
 			}
-	
-			// enable	
+
+			// enable
 	   		this.enable(this.$el.val());
 
 			$(this.doc).click(function() { this.hideAllDropDown() }.bind2(this));
-			
+
 			if (this.opts.autoclear) {
 				$(this.doc).bind('paste', function(e) {
 					 setTimeout(function () { this.clean(); }.bind2(this), 200);
@@ -187,20 +187,20 @@ function detectAndroidWebKit() {
 		        if (e.ctrlKey || e.metaKey) isCtrl = true;
 		        if (e.keyCode == 9) { this.execCommand('indent', false); return false; }
 		        if (e.keyCode == 66 && isCtrl) { this.execCommand('bold', 'bold'); return false; }
-		        if (e.keyCode == 73 && isCtrl) { this.execCommand('italic', 'italic'); return false; }			        
-		        
+		        if (e.keyCode == 73 && isCtrl) { this.execCommand('italic', 'italic'); return false; }
+
 		    }.bind2(this)).keyup(function(e) {
-				isCtrl = false;		
-				
+				isCtrl = false;
+
 		        if (e.keyCode == 13) {
 			        $(this.doc).linkify();
 			        return true;
-		        }				
-					        
+		        }
+
 				this.syncCode();
 		    }.bind2(this));
 
-			// autosave	
+			// autosave
 			if (this.opts.autosave)	{
 				setInterval(function() {
 					var html = this.getHtml();
@@ -208,17 +208,17 @@ function detectAndroidWebKit() {
 				}.bind2(this), this.opts.interval*1000);
 			}
 
-			this.formSets();	
+			this.formSets();
 
 			// focus
 			if (this.opts.focus) this.focus();
 		},
-		
-		/* 	
-			API 
+
+		/*
+			API
 		*/
 		setHtml: function(html) {
-			this.doc.body.innerHTML = html;			
+			this.doc.body.innerHTML = html;
 			this.docObserve();
 		},
 
@@ -250,7 +250,7 @@ function detectAndroidWebKit() {
 
 		syncCode: function() {
 			var html = this.getHtml();
-			
+
 			html = this.tidyUp(html);
 			html = html.replace(/\%7B/gi, '{');
 			html = html.replace(/\%7D/gi, '}');
@@ -265,67 +265,67 @@ function detectAndroidWebKit() {
 			this.box.remove();
 			this.$el.val(html).show();
 		},
-		
+
 		// Include
 		include: function() {
 			// lang
 			$('head').append(
 				$('<script src="' + this.opts.paths.language + '"></script>')
 			);
-			
+
 			// toolbar
 			// @tanraya
 			if (this.opts.toolbar !== false) {
-			  $('head').append($('<script src="' + this.opts.paths.toolbar + '"></script>')); 		
+			  $('head').append($('<script src="' + this.opts.paths.toolbar + '"></script>'));
 			}
 		},
-		
-		// Enable 
+
+		// Enable
 		enable: function(html) {
 	   		this.doc = this.contentDocumentFrame(this.frame);
-	   		
+
 			// flash replace
-			html = html.replace(/\<object([\w\W]*?)\<\/object\>/gi, '<p class="redactor_video_box"><object$1</object></p>');	   		
-	   		
+			html = html.replace(/\<object([\w\W]*?)\<\/object\>/gi, '<p class="redactor_video_box"><object$1</object></p>');
+
 	   		if (html == '') {
 	   			if (this.opts.autoformat === true) {
 	   				html = $.browser.msie ? "<p></p>" : "<p>&nbsp;</p>";
 		   		}
 	   		}
-	   		
+
 			this.redactorWrite(this.getRedactorDoc(html));
 			if (this.opts.clearOnInit) this.clean();
-			this.designMode();		
+			this.designMode();
 		},
 
 		enableAir: function() {
 			if (this.opts.air) {
 				$('#imp_redactor_air_' + this.frameID).hide();
-				
+
 				$(this.doc).bind('textselect', this.frameID, function(e) {
 					var width = $('#imp_redactor_air_' + this.frameID).width();
 					var width_area = $(this.frame).width();
 					var diff = width_area - e.clientX;
 
 					if (diff < width) e.clientX = e.clientX - width;
-					
+
 					$('#imp_redactor_air_' + this.frameID).css({ left: e.clientX + 'px', top: (e.clientY + 8) + 'px' }).show();
-					
+
 				}.bind2(this));
-				
+
 				$(this.doc).bind('textunselect', this.frameID, function() {
 					$('#imp_redactor_air_' + this.frameID).hide();
-				}.bind2(this)); 			
-			}		
+				}.bind2(this));
+			}
 		},
 
 		redactorWrite: function(html) {
 			this.doc.open();
 			this.doc.write(html);
-			this.doc.close();		
+			this.doc.close();
 		},
 
-		getRedactorDoc: function(html) {		
+		getRedactorDoc: function(html) {
 			css = '';
 
 			$.each(this.opts.paths.stylesheets, $.proxy(function(i, stylesheet) {
@@ -340,9 +340,9 @@ function detectAndroidWebKit() {
 			return frameHtml;
 		},
 
-		contentDocumentFrame: function(frame) {	
+		contentDocumentFrame: function(frame) {
 			frame = frame.get(0);
-	
+
 			if (frame.contentDocument) return frame.contentDocument;
 			else if (frame.contentWindow && frame.contentWindow.document) return frame.contentWindow.document;
 			else if (frame.document) return frame.document;
@@ -354,8 +354,8 @@ function detectAndroidWebKit() {
 				this.doc.designMode = 'on';
 				this.frame.load(function() {
 					this.enableObjects();
-					this.docObserve();			
-	   				this.doc.designMode = 'on'; 
+					this.docObserve();
+	   				this.doc.designMode = 'on';
 	   			}.bind2(this));
 			}
 		},
@@ -363,29 +363,29 @@ function detectAndroidWebKit() {
 		enableObjects: function() {
 	   		if ($.browser.mozilla) {
 				this.doc.execCommand("enableObjectResizing", false, "false");
-				this.doc.execCommand("enableInlineTableEditing", false, "false");	   						
-			}		
+				this.doc.execCommand("enableInlineTableEditing", false, "false");
+			}
 		},
-		
-	
+
+
 		// Observers
 		docObserve: function() {
 			var body = $(this.doc).find('body');
-			
+
 			body.find('img').click(function(e)   { this.imageEdit(e); }.bind2(this));
 			body.find('table').click(function(e) { this.tableObserver(e); }.bind2(this));
 			body.find('.redactor_file_link').click(function(e) { this.fileEdit(e); }.bind2(this));
 		},
-				
-		// Format on submit form 
+
+		// Format on submit form
 		formSets: function() {
 			var oldOnsubmit = null;
 			var theForm     = $(this.box).parents('form');
 
 			if (theForm.length == 0) return false;
-	
+
 			oldOnsubmit = theForm.get(0).onsubmit;
-	
+
 			if (typeof theForm.get(0).onsubmit != "function") {
 				theForm.get(0).onsubmit = function() {
 	          		if (this.opts.visual) {
@@ -401,16 +401,16 @@ function detectAndroidWebKit() {
 					}
 				}.bind2(this)
 			}
-	
+
 			return true;
-		},			
-		
-		// Exec		
+		},
+
+		// Exec
 		execCommand: function(cmd, param) {
 			if (this.opts.visual && this.doc) {
     			try {
     				this.frame.get(0).contentWindow.focus();
-					
+
 	    			if (cmd == 'inserthtml' && $.browser.msie) {
 	    			  this.doc.selection.createRange().pasteHTML(param);
 	    			} else {
@@ -420,50 +420,50 @@ function detectAndroidWebKit() {
 							this.doc.body.appendChild(this.doc.createElement("BR"));
 					}
 				} catch (e) { }
-				
-				this.syncCode();	
+
+				this.syncCode();
 				if (this.opts.air) $('#imp_redactor_air_' + this.frameID).hide();
 			}
-		},						
-		
+		},
+
 		/**************************************************************************************************************************
 		 * Format and clean********************************************************************************************************
 		**************************************************************************************************************************/
 		clean: function() {
 			var html = this.getHtml();
 
-			if ($.browser.mozilla) html = this.convertSpan(html);			
-			
+			if ($.browser.mozilla) html = this.convertSpan(html);
+
 			// strip tags
 			html = html.replace(/<(?!\s*\/?(a|br|p|b|i|strong|em|table|tr|td|th|tbody|thead|tfoot|h2|h3|h4)\b)[^>]+>/ig,"");
-			
-			if (this.opts.removeStyles) html = html.replace(/ style=".*?"/g, ''); 
+
+			if (this.opts.removeStyles) html = html.replace(/ style=".*?"/g, '');
 			if (this.opts.removeClasses) html = html.replace(/ class=".*?"/g, '');
-			
-			html = this.tidyUp(html);	
-			
+
+			html = this.tidyUp(html);
+
 			this.setHtml(html);
 			this.paragraphise();
-			
+
 			return html;
 		},
-		
+
 
 		tidyUp: function (html) {
 			// lowercase
-			if ($.browser.msie) 
+			if ($.browser.msie)
 			{
-				html = html.replace(/< *(\/ *)?(\w+)/g,function(w){return w.toLowerCase()});				
+				html = html.replace(/< *(\/ *)?(\w+)/g,function(w){return w.toLowerCase()});
 				html = html.replace(/ jQuery(.*?)=\"(.*?)\"/gi, '');
-			}			
-		
+			}
+
 			if (this.opts.convertLinks) html = this.convertLinks(html);
 
-			html = html.replace(/[\t]*/g, ''); 
-			html = html.replace(/[\r\n]*/g, ''); 
-			html = html.replace(/\n\s*\n/g, "\n"); 
+			html = html.replace(/[\t]*/g, '');
+			html = html.replace(/[\r\n]*/g, '');
+			html = html.replace(/\n\s*\n/g, "\n");
 			html = html.replace(/^[\s\n]*/, '');
-			html = html.replace(/[\s\n]*$/, '');	
+			html = html.replace(/[\s\n]*$/, '');
 
 			var lb = '\r\n';
 			var btags = ["<html","</html>","</head>","<title","</title>","<meta","<link","<style","</style>","</body>","<body","<head","<div","<p","<form","<fieldset","<label","</label>","<legend","</legend>","<object","</object>","<embed","</embed>","<select","</select>","<option","<option","<input","<textarea","</textarea>","</form>","</fieldset>","<br>","<br />","<hr","<pre","</pre>","<blockquote","</blockquote>","<ul","</ul>","<ol","</ol>","<li","<dl","</dl>","<dt","</dt>","<dd","</dd>","<\!--","<table","</table>","</thead>","<tbody","</tbody>","<caption","</caption>","<th","</th>","<tr","</tr>","<td","<script","</script>","<noscript","</noscript>"];
@@ -471,40 +471,40 @@ function detectAndroidWebKit() {
 			{
 				var bbb = btags[i];
 				html = html.replace(new RegExp(bbb,'gi'),lb+bbb);
-			}				
-			
+			}
+
 			// indenting
 			html = html.replace(/<li/g, "\t<li");
 			html = html.replace(/<tr/g, "\t<tr");
-			html = html.replace(/<td/g, "\t\t<td");		
-			html = html.replace(/<\/tr>/g, "\t</tr>");	
-			
+			html = html.replace(/<td/g, "\t\t<td");
+			html = html.replace(/<\/tr>/g, "\t</tr>");
+
 			// empty tags
 			var btags = ["<pre></pre>","<blockquote></blockquote>","<ul></ul>","<ol></ol>","<li></li>","<table></table>","<tr></tr>","<span><span>", "<p>&nbsp;</p>", "<p></p>", "<p><br></p>", "<div></div>"];
 			for (i = 0; i < btags.length; ++i)
 			{
 				var bbb = btags[i];
 				html = html.replace(new RegExp(bbb,'gi'), "");
-			}	
-		
+			}
+
 			return html;
 		},
-		
+
 		convertLinks: function(html)
 		{
 			html = html.replace(/\<a(.*?)href="http:\/\/(.*?)"(.*?)>([\w\W]*?)\<\/a\>/gi, "<a$1href=\"rttp://$2\"$3>$4</a>");
-			html = html.replace(/\<a(.*?)href="rttp:\/\/(.*?)"(.*?)>http:\/\/([\w\W]*?)\<\/a\>/gi, "<a$1href=\"rttp://$2\"$3>rttp:\/\/$4</a>");				
+			html = html.replace(/\<a(.*?)href="rttp:\/\/(.*?)"(.*?)>http:\/\/([\w\W]*?)\<\/a\>/gi, "<a$1href=\"rttp://$2\"$3>rttp:\/\/$4</a>");
 
 			//var url1 = /(^|>|\s)(www\..+?\..+?)(\s|<|$)/g;
 			var url2 = /(^|>|\s)(((https?|ftp):\/\/|mailto:).+?)(\s|<|$)/g;
 
 			//html = html.replace(url1, '$1<a href="http://$2">$2</a>$3')
-			html = html.replace(url2, '$1<a href="$2">$2</a>$5');		
+			html = html.replace(url2, '$1<a href="$2">$2</a>$5');
 
 			html = html.replace(/\<a(.*?)href="rttp:\/\/(.*?)"(.*?)>([\w\W]*?)\<\/a\>/gi, "<a$1href=\"http://$2\"$3>$4</a>");
 			html = html.replace(/\<a(.*?)href="http:\/\/(.*?)"(.*?)>rttp:\/\/([\w\W]*?)\<\/a\>/gi, "<a$1href=\"http://$2\"$3>http://$4</a>");
-			
-			return html;			
+
+			return html;
 		},
 
 		convertSpan: function(html)
@@ -513,7 +513,7 @@ function detectAndroidWebKit() {
 			html = html.replace(/\<span(.*?)style="font-style: italic;"\>([\w\W]*?)\<\/span\>/gi, "<em>$2</em>");
 			html = html.replace(/\<span(.*?)style="font-weight: bold; font-style: italic;"\>([\w\W]*?)\<\/span\>/gi, "<em><strong>$2</strong></em>");
 			html = html.replace(/\<span(.*?)style="font-style: italic; font-weight: bold;"\>([\w\W]*?)\<\/span\>/gi, "<strong><em>$2</em></strong>");
-	
+
 			return html;
 	  	},
 
@@ -527,7 +527,7 @@ function detectAndroidWebKit() {
 			if (this.opts.visual)
 			{
 				var theBody = this.doc.body;
-	
+
 				/* Remove all text nodes containing just whitespace */
 				for (var i = 0; i < theBody.childNodes.length; i++)
 				{
@@ -537,14 +537,14 @@ function detectAndroidWebKit() {
 						i--;
 					}
 				}
-	
+
 				var removedElements = new Array();
 				for (var i = 0; i < theBody.childNodes.length; i++)
 				{
 					if (theBody.childNodes[i].nodeName.isInlineName())
 					{
 						removedElements.push(theBody.childNodes[i].cloneNode(true));
-						theBody.removeChild(theBody.childNodes[i]);	
+						theBody.removeChild(theBody.childNodes[i]);
 						i--;
 					}
 					else if (theBody.childNodes[i].nodeName.toLowerCase() == "br")
@@ -557,7 +557,7 @@ function detectAndroidWebKit() {
 								{
 									theBody.removeChild(theBody.childNodes[i]);
 								}
-	
+
 								if (removedElements.length > 0)
 								{
 									this.insertNewParagraph(removedElements, theBody.childNodes[i]);
@@ -567,7 +567,7 @@ function detectAndroidWebKit() {
 							else if (!theBody.childNodes[i + 1].nodeName.isInlineName()) theBody.removeChild(theBody.childNodes[i]);
 							else if (removedElements.length > 0)
 							{
-								removedElements.push(theBody.childNodes[i].cloneNode(true));	
+								removedElements.push(theBody.childNodes[i].cloneNode(true));
 								theBody.removeChild(theBody.childNodes[i]);
 							}
 							else theBody.removeChild(theBody.childNodes[i]);
@@ -581,39 +581,39 @@ function detectAndroidWebKit() {
 						removedElements = new Array();
 					}
 				}
-	
+
 				if (removedElements.length > 0) this.insertNewParagraph(removedElements);
 			}
-	
+
 			return true;
 		},
 		insertNewParagraph: function(elementArray, succeedingElement)
 		{
 			var theBody = this.doc.getElementsByTagName("body")[0];
 			var theParagraph = this.doc.createElement("p");
-	
+
 			for (var i = 0; i < elementArray.length; i++) theParagraph.appendChild(elementArray[i]);
-	
+
 			if (typeof(succeedingElement) != "undefined") theBody.insertBefore(theParagraph, succeedingElement);
 			else theBody.appendChild(theParagraph);
-	
+
 			return true;
 		},
 
 		/*
 			Selection
-		*/			
+		*/
 		get_selection: function ()
 		{
 			if (this.frame.get(0).contentWindow.getSelection) return this.frame.get(0).contentWindow.getSelection();
 			else if (this.frame.get(0).contentWindow.document.selection) return this.frame.contentWindow.get(0).document.selection.createRange();
-		},				
-		
+		},
+
 		setCut: function()
 		{
 			this.execCommand('inserthtml', '<hr class="redactor_cut" />');
-		},		
-		
+		},
+
 		/**************************************************************************************************************************
 		 * Toggle *****************************************************************************************************************
 		**************************************************************************************************************************/
@@ -622,60 +622,60 @@ function detectAndroidWebKit() {
 			if (this.opts.visual)
 			{
 				this.addSelButton('html');
-				
+
 				var html = this.getHtml();
-				
+
 				html = this.tidyUp(html);
-	
+
 				html = html.replace(/\%7B/gi, '{');
 				html = html.replace(/\%7D/gi, '}');
-	
+
 				// flash replace
 				html = html.replace(/<p(.*?)class="redactor_video_box"(.*?)>([\w\W]*?)\<\/p>/gi, "$3");
-		
+
 				// files replace
 				html = html.replace(/<a(.*?)rel="(.*?)"(.*?)class="redactor_file_link(.*?)"(.*?)>([\w\W]*?)\<\/a>/gi, "<a href=\"" + this.opts.paths.files.download +  "$2\" rel=\"$2\" class=\"redactor_file_link$4\">$6</a>");
 
-				// cut replace	
+				// cut replace
 				html = html.replace(/<hr class="redactor_cut"\/>/gi, '<!--more-->');
 				html = html.replace(/<hr class=redactor_cut>/gi, '<!--more-->');
-		
-		
+
+
 				this.frame.hide();
 				this.$el.val(html);
 				this.$el.show().focus();
-	
+
 				var height = this.$el.height();
-				
+
 				this.opts.visual = false;
 			}
 			else
 			{
 				this.removeSelButton('html');
 				this.$el.hide();
-	
+
 				var html = this.$el.val();
-				
+
 				// cut replace
 				html = html.replace(/<!--more-->/gi, '<hr class="redactor_cut"/>');
-	
+
 				// flash replace
 				html = html.replace(/\<object([\w\W]*?)\<\/object\>/gi, '<p class="redactor_video_box"><object$1</object></p>');
-	
-				// files replace	
+
+				// files replace
 				html = html.replace(/<a(.*?)href="(.*?)"(.*?)rel="(.*?)"(.*?)class="redactor_file_link(.*?)">(.*?)<\/a>/gi, "<a href=\"javascript:void(null);\" rel=\"$4\" class=\"redactor_file_link$6\">$7</a>");
 
-					
+
 				this.opts.visual = true;
-	
+
 				this.setHtml(html);
-				
+
 				this.frame.show();
 				this.focus();
 			}
-		},	
-		
-		
+		},
+
+
 		/**************************************************************************************************************************
 		 * Video ******************************************************************************************************************
 		**************************************************************************************************************************/
@@ -684,90 +684,90 @@ function detectAndroidWebKit() {
 			redactorActive = this;
 			this.modalInit(RLANG.video, this.opts.paths.dialogs.video, 600, 360, function()
 			{
-				$('#redactor_insert_video_area').focus();			
+				$('#redactor_insert_video_area').focus();
 			});
-		},	
+		},
 		insertVideo: function()
 		{
 			var data = $('#redactor_insert_video_area').val();
-			if (redactorActive.opts.visual) 
+			if (redactorActive.opts.visual)
 			{
 				// iframe video
 				if (data.search('iframe')) {}
 				// flash
 				else data = '<p class="redactor_video_box">' + data + '</p>';
 			}
-	
+
 			redactorActive.execCommand('inserthtml', data);
 			this.modalClose();
-			
-		},	
 
-	
-		
+		},
+
+
+
 		/**************************************************************************************************************************
 		 * File *******************************************************************************************************************
 		**************************************************************************************************************************/
 		showFile: function()
 		{
 			redactorActive = this;
-			
+
             var handler = function()
             {
             	// upload params
                 var params = '';
                 if (this.opts.fileUploadCallback) params = this.opts.fileUploadCallback();
-                
+
                 $('#redactor_file').dragupload(
-                { 
-                	url: this.opts.paths.files.upload + params, 
+                {
+                	url: this.opts.paths.files.upload + params,
                 	success: function(data)
 	                {
 		                this.fileUploadCallback(data);
-		                
+
                 	}.bind2(this)
                 });
-                
+
                 this.uploadInit('redactor_file', { auto: true, url: this.opts.paths.files.upload + params, success: function(data) {
-                    
+
                     this.fileUploadCallback(data);
-                    
-                }.bind2(this)  });                  
-           
+
+                }.bind2(this)  });
+
 
             }.bind2(this);
-            
-        
+
+
             redactorActive = this;
 			this.modalInit(RLANG.file, this.opts.paths.dialogs.file, 500, 400, handler);
-		},	
+		},
 		fileUploadCallback: function(data)
 		{
 			redactorActive.frame.get(0).contentWindow.focus();
 			redactorActive.execCommand('inserthtml', data);
-			this.modalClose();	
-			this.docObserve();		
-		},	
+			this.modalClose();
+			this.docObserve();
+		},
 		fileEdit: function(e)
 		{
 			var el = e.target;
 			var file_id = $(el).attr('rel');
-			
+
 			var handler = function()
             {
 				$('#file').val($(el).text());
 				$('#redactorFileDeleteBtn').click(function()
 				{
-					this.fileDelete(el, file_id);					
+					this.fileDelete(el, file_id);
 				}.bind2(this));
-				
+
 				$('#redactorFileDownloadBtn').click(function()
-				{				
+				{
 					this.fileDownload(el, file_id);
 				}.bind2(this));
-			
+
 			}.bind2(this);
-			
+
 			redactorActive = this;
 			this.modalInit(RLANG.file, this.opts.paths.dialogs.fileEdit, 400, 200, handler);
 		},
@@ -776,31 +776,31 @@ function detectAndroidWebKit() {
 			$(el).remove();
 			$.get(this.opts.paths.files.remove + file_id);
 			redactorActive.frame.get(0).contentWindow.focus();
-			this.modalClose();				
+			this.modalClose();
 		},
 		fileDownload: function(el, file_id)
 		{
-			top.location.href = this.opts.paths.files.download + file_id;				
-		},		
+			top.location.href = this.opts.paths.files.download + file_id;
+		},
 
 		/**************************************************************************************************************************
 		 * Table ******************************************************************************************************************
 		**************************************************************************************************************************/
         showTable: function()
-        {       
+        {
             redactorActive = this;
             this.modalInit(RLANG.table, this.opts.paths.dialogs.table, 360, 200);
         },
         insertTable: function()
-        {           
+        {
             var rows = $('#redactor_table_rows').val();
             var columns = $('#redactor_table_columns').val();
-            
+
             var table_box = $('<div></div>');
-            
+
             var tableid = Math.floor(Math.random() * 99999);
             var table = $('<table id="table' + tableid + '"><tbody></tbody></table>');
-            
+
             for (i = 0; i < rows; i++)
             {
             	var row = $('<tr></tr>')
@@ -811,20 +811,20 @@ function detectAndroidWebKit() {
             	}
             	$(table).append(row);
             }
-            
+
             $(table_box).append(table);
             var html = $(table_box).html();
             if ($.browser.msie) html += '<p></p>';
- 			else  html += '<p>&nbsp;</p>';           
-                        
-            redactorActive.execCommand('inserthtml', html);            
+ 			else  html += '<p>&nbsp;</p>';
+
+            redactorActive.execCommand('inserthtml', html);
    			this.enableObjects();
-            this.docObserve();          
+            this.docObserve();
             this.modalClose();
-            
+
             $table = $(this.doc).find('body').find('#table' + tableid);
-    
-            
+
+
         },
 		tableObserver: function(e)
 		{
@@ -835,7 +835,7 @@ function detectAndroidWebKit() {
 
 			$current_td = $(e.target);
 			$current_tr = $(e.target).parents('tr');
-		},	
+		},
 		deleteTable: function()
 		{
 			$($table).remove();
@@ -848,12 +848,12 @@ function detectAndroidWebKit() {
 		deleteColumn: function()
 		{
 			var index = $($current_td).attr('cellIndex');
-            
+
             $($table).find('tr').each(function()
-            {   
+            {
                 $(this).find('td').eq(index).remove();
-            });     
-		},	
+            });
+		},
       	addHead: function()
         {
             if ($($table).find('thead').size() != 0) this.deleteHead();
@@ -865,49 +865,49 @@ function detectAndroidWebKit() {
                 $thead.append(tr);
                 $($table).prepend($thead);
             }
-        },      
+        },
         deleteHead: function()
         {
-            $($thead).remove(); 
-            $thead = false;   
-        },  
+            $($thead).remove();
+            $thead = false;
+        },
 		insertRowAbove: function()
 		{
-			this.insertRow('before');		
-		},	        
+			this.insertRow('before');
+		},
 		insertRowBelow: function()
 		{
-			this.insertRow('after');	
+			this.insertRow('after');
 		},
 		insertColumnLeft: function()
 		{
-			this.insertColumn('before');		
+			this.insertColumn('before');
 		},
 		insertColumnRight: function()
 		{
 			this.insertColumn('after');
-		},	
+		},
 		insertRow: function(type)
 		{
 			var new_tr = $($current_tr).clone();
 			new_tr.find('td').html('&nbsp;');
-			if (type == 'after') $($current_tr).after(new_tr);		
-			else $($current_tr).before(new_tr);		
+			if (type == 'after') $($current_tr).after(new_tr);
+			else $($current_tr).before(new_tr);
 		},
-		insertColumn: function(type)			    
+		insertColumn: function(type)
 		{
             var index = $($current_td).attr('cellIndex');
-            
+
 			$($table).find('tr').each(function(i,s)
-			{   
-			    var current = $(s).find('td').eq(index);    
-			    var td = current.clone();   
+			{
+			    var current = $(s).find('td').eq(index);
+			    var td = current.clone();
 			    td.html('&nbsp;');
 			    if (type == 'after') $(current).after(td);
-			    else $(current).before(td);			    
-			});			
+			    else $(current).before(td);
+			});
 		},
-    
+
 		/**************************************************************************************************************************
 		 * Image ******************************************************************************************************************
 		**************************************************************************************************************************/
@@ -939,7 +939,7 @@ function detectAndroidWebKit() {
                 alt.val($el.attr('alt'));
                 align_box.val($el.css('float'));
             }.bind2(this);
-        
+
             redactorActive = this;
             this.modalInit(RLANG.image, this.opts.paths.dialogs.imageEdit, 380, 290, handler);
         },
@@ -955,27 +955,35 @@ function detectAndroidWebKit() {
             	if (this.opts.paths.images.list !== false) {
 					$.getJSON(this.opts.paths.images.list, function(data) {
 						  $.each(data, function(key, val) {
-						  		var img = $('<img src="' + val.thumb + '" rel="' + val.image + '">');
-						  		img.click(function() { redactorActive.imageSetThumb($(this).attr('rel')); });
+						  		var img = $('<img></img>');
+                                img.attr('src', val.thumb);
+                                img.attr('rel', val.image);
+                                img.attr('data-lightbox', val.lightbox);
+						  		img.click(function() {
+                                  redactorActive.imageSetThumb(
+                                    $(this).attr('rel'),
+                                    $(this).data('lightbox')
+                                  );
+                                });
 								$('#redactor_image_box').append(img);
 						  });
-					});    
+					});
 				} else {
 					// 'pretty' code
 					$('#redactor_tabs li').eq(0).remove();
 					$('#redactor_tabs a').eq(1).addClass('redactor_tabs_act');
 					$('#redactor_tabs1').hide();
-					$('#redactor_tabs2').show();					
-				}            
+					$('#redactor_tabs2').show();
+				}
 
             	// upload params
-                $('#redactor_file').dragupload({ 
-                	url     : this.opts.paths.images.upload, 
+                $('#redactor_file').dragupload({
+                	url     : this.opts.paths.images.upload,
                 	success : function(data) {
 		                this.imageUploadCallback(data);
                 	}.bind2(this)
                 });
-  
+
                 this.uploadInit('redactor_file', {
 	                auto    : true,
 	                url     : this.opts.paths.images.upload,
@@ -984,13 +992,13 @@ function detectAndroidWebKit() {
                        this.imageUploadCallback(data);
                 }.bind2(this)});
             }.bind2(this);
-        
+
             redactorActive = this;
             this.modalInit(RLANG.image, this.opts.paths.dialogs.image, 750, 600, handler);
         },
 
-        imageSetThumb: function(data) {
-        	this._imageSet('<img alt="" src="' + data + '" />');
+        imageSetThumb: function(data, lightbox) {
+        	this._imageSet('<img alt="" src="' + data + '" rel="' + lightbox + '" />');
         },
 
         imageUploadCallback: function(data) {
@@ -1000,21 +1008,21 @@ function detectAndroidWebKit() {
 
         _imageSet: function(html) {
             redactorActive.frame.get(0).contentWindow.focus();
-            
+
             if ($.browser.msie) {
                 $(redactorActive.doc.getElementById('span' + redactorActive.spanid)).after(html);
                 $(redactorActive.doc.getElementById('span' + redactorActive.spanid)).remove();
             } else {
                 redactorActive.execCommand('inserthtml', html);
             }
-    
+
             this.modalClose();
-            this.docObserve();                   	
+            this.docObserve();
         },
-        				
+
 		/**************************************************************************************************************************
 		 * Link ******************************************************************************************************************
-		**************************************************************************************************************************/				
+		**************************************************************************************************************************/
 		showLink: function()
 		{
 			redactorActive = this;
@@ -1052,7 +1060,7 @@ function detectAndroidWebKit() {
 
 				$('#redactor_link_url').val(url).focus();
 				$('#redactor_link_text').val(text);
-				$('#redactor_link_title').val(title);	
+				$('#redactor_link_title').val(title);
 			}.bind2(this);
 
 			this.modalInit(RLANG.link, this.opts.paths.dialogs.link, 400, 300, handler);
@@ -1061,18 +1069,18 @@ function detectAndroidWebKit() {
 		insertLink: function() {
 			var value = $('#redactor_link_text').val();
 			if (value == '') return true;
-			
+
 			var title = $('#redactor_link_title').val();
-			if (title != '') title = ' title="' + $('#redactor_link_title').val() + '"';			
-			
+			if (title != '') title = ' title="' + $('#redactor_link_title').val() + '"';
+
 			// Email link?
 			var mailto = $('#redactor_link_id_url').get(0).checked ? '' : 'mailto:';
 			var a = '<a href="' + mailto + $('#redactor_link_url').val() + '"' + title +'>' + value + '</a> ';
-	
+
 			if (this.insert_link_node) {
 				$(this.insert_link_node).text(value);
 				$(this.insert_link_node).attr('href', $('#redactor_link_url').val());
-				
+
 				var title = $('#redactor_link_title').val();
 				if (title != '') $(this.insert_link_node).attr('title', title);
 
@@ -1081,14 +1089,14 @@ function detectAndroidWebKit() {
 				redactorActive.frame.get(0).contentWindow.focus();
 				redactorActive.execCommand('inserthtml', a);
 			}
-			
+
 			this.modalClose();
-		},	
-		
+		},
+
 
 		/**************************************************************************************************************************
 		 * Modal ******************************************************************************************************************
-		**************************************************************************************************************************/	
+		**************************************************************************************************************************/
 		modalInit: function(title, url, width, height, handler, scroll)
 		{
 			if (this.opts.overlay) {
@@ -1096,19 +1104,19 @@ function detectAndroidWebKit() {
 				  .show()
 				  .click(function() { this.modalClose(); }.bind2(this));
 			}
-			
+
 			if ($('#redactor_imp_modal').size() == 0) {
 				this.modal = $('<div id="redactor_imp_modal" style="display: none;"> \
 				<div id="redactor_imp_modal_close"></div><div id="redactor_imp_modal_header"></div> \
 				<div id="redactor_imp_modal_inner"></div></div>');
 				$('body').append(this.modal);
 			}
-			
+
 			$('#redactor_imp_modal_close').click(function() { this.modalClose(); }.bind2(this));
 
 			var escClose = function(e) { if ( e.keyCode == 27) this.modalClose(); }.bind2(this)
 			$(document).keyup(escClose);
-			$(this.doc).keyup(escClose);			
+			$(this.doc).keyup(escClose);
 
 			$.ajax({
 				url: url,
@@ -1116,25 +1124,25 @@ function detectAndroidWebKit() {
 					// parse lang
 					$.each(RLANG, function(i,s) {
 						var re = new RegExp("%RLANG\." + i + "%","gi");
-						data = data.replace(re, s);						
+						data = data.replace(re, s);
 					});
-					
+
 					$('#redactor_imp_modal_inner').html(data);
 					$('#redactor_imp_modal_header').html(title);
-					
+
 					$('#redactor_imp_modal').css({
 						width      : width + 'px',
 						height     : height ? height + 'px' : 'auto',
 						marginTop  : '-' + height/2 + 'px',
 						marginLeft : '-' + width/2 + 'px'
-					}).fadeIn('fast');					
+					}).fadeIn('fast');
 
 					if (scroll === true) {
 						$('#imp_redactor_table_box')
 						  .height(height-$('#redactor_imp_modal_header').outerHeight()-130)
-						  .css('overflow', 'auto');						
+						  .css('overflow', 'auto');
 					}
-					
+
 					if (typeof(handler) == 'function') handler();
 				}.bind2(this)
 			});
@@ -1146,8 +1154,8 @@ function detectAndroidWebKit() {
 				$('#redactor_imp_modal_inner').html('');
 				if (this.opts.overlay) {
 					$('#redactor_imp_modal_overlay')
-					  .hide()		
-					  .unbind('click', function() { this.modalClose(); }.bind2(this));					
+					  .hide()
+					  .unbind('click', function() { this.modalClose(); }.bind2(this));
 				}
 
 				var escClose = function(e) { if ( e.keyCode == 27) this.modalClose(); }.bind2(this)
@@ -1158,7 +1166,7 @@ function detectAndroidWebKit() {
 
 		/**************************************************************************************************************************
 		 * Upload *****************************************************************************************************************
-		**************************************************************************************************************************/  
+		**************************************************************************************************************************/
         uploadInit: function(element, options)
         {
             /*
@@ -1172,19 +1180,19 @@ function detectAndroidWebKit() {
                 auto    : false,
                 input   : false
             };
-      
+
             $.extend(this.uploadOptions, options);
-    
-            // Test input or form                 
+
+            // Test input or form
             if ($('#' + element).get(0).tagName == 'INPUT') {
                 this.uploadOptions.input = $('#' + element);
                 this.element = $($('#' + element).get(0).form);
             } else {
                 this.element = $('#' + element);
             }
-    
+
             this.element_action = this.element.attr('action');
-    
+
             // Auto or trigger
             if (this.uploadOptions.auto) {
 				$(this.uploadOptions.input).change(function() {
@@ -1193,7 +1201,7 @@ function detectAndroidWebKit() {
 				}.bind2(this));
 
             } else if (this.uploadOptions.trigger) {
-                $('#' + this.uploadOptions.trigger).click(function() { this.uploadSubmit(); }.bind2(this)); 
+                $('#' + this.uploadOptions.trigger).click(function() { this.uploadSubmit(); }.bind2(this));
             }
         },
 
@@ -1203,16 +1211,16 @@ function detectAndroidWebKit() {
 
         uploadFrame : function() {
             this.id = 'f' + Math.floor(Math.random() * 99999);
-        
+
             var d       = document.createElement('div');
             var iframe  = '<iframe style="display:none" src="about:blank" id="'+this.id+'" name="'+this.id+'"></iframe>';
             d.innerHTML = iframe;
             document.body.appendChild(d);
-    
+
             // Start
             if (this.uploadOptions.start) this.uploadOptions.start();
             $('#' + this.id).load(function () { this.uploadLoaded() }.bind2(this));
-    
+
             return this.id;
         },
 
@@ -1220,8 +1228,8 @@ function detectAndroidWebKit() {
             if (this.uploadOptions.input) {
                 var formId = 'redactorUploadForm' + this.id;
                 var fileId = 'redactorUploadFile' + this.id;
-                this.form = $('<form  action="' + this.uploadOptions.url + '" method="POST" target="' + name + '" name="' + formId + '" id="' + formId + '" enctype="multipart/form-data"></form>');    
-    
+                this.form = $('<form  action="' + this.uploadOptions.url + '" method="POST" target="' + name + '" name="' + formId + '" id="' + formId + '" enctype="multipart/form-data"></form>');
+
                 var oldElement = this.uploadOptions.input;
                 var newElement = $(oldElement).clone();
 
@@ -1232,15 +1240,15 @@ function detectAndroidWebKit() {
                 $(this.form).css('position', 'absolute')
                             .css('top', '-2000px')
                             .css('left', '-2000px')
-                            .appendTo('body');  
-                
+                            .appendTo('body');
+
                 this.form.submit();
             } else {
                 f.attr('target', name)
                  .attr('method', 'POST')
                  .attr('enctype', 'multipart/form-data')
                  .attr('action', this.uploadOptions.url);
-    
+
                 this.element.submit();
             }
         },
@@ -1251,42 +1259,42 @@ function detectAndroidWebKit() {
             if (i.contentDocument)    d = i.contentDocument;
             else if (i.contentWindow) d = i.contentWindow.document;
             else                      d = window.frames[this.id].document;
-            
+
             if (d.location.href == "about:blank") return true;
-    
+
             // Success
             if (this.uploadOptions.success) this.uploadOptions.success(d.body.innerHTML);
-    
+
             this.element.attr('action', this.element_action)
                         .attr('target', '');
-        },								
-	
+        },
+
 
 		/**************************************************************************************************************************
 		 * Toolbar *****************************************************************************************************************
 		**************************************************************************************************************************/
 		buildToolbar: function()
-		{	
+		{
 	   		this.toolbar = $('<ul id="imp_redactor_toolbar_' + this.frameID + '" class="imp_redactor_toolbar"></ul>');
-	   		
+
 	   		if (this.opts.air) {
 	   			$(this.air).append(this.toolbar);
 	   			this.box.prepend(this.air);
 	   		} else $(this.box).prepend(this.toolbar);
-				
-		
+
+
 			$.each(RTOOLBAR, function (i, s) {
    				if (s.name == 'separator') {
 					var li = $('<li class="separator"></li>');
-	   				$(this.toolbar).append(li);	   			
+	   				$(this.toolbar).append(li);
    				} else {
 					var a = $('<a href="javascript:void(null);" class="imp_btn imp_btn_' + s.name + '" title="' + s.title + '"></a>');
-					
+
 					if (typeof(s.func) == 'undefined') a.click(function() { this.execCommand(s.exec, s.name); }.bind2(this));
 					else if (s.func != 'show') a.click(function(e) { this[s.func](e); }.bind2(this));
-					
+
 					var li = $('<li class="imp_li_btn imp_li_btn_' + s.name + '"></li>');
-					$(li).append(a);   						   						
+					$(li).append(a);
 	   				$(this.toolbar).append(li);
 
 					// build dropdown box
@@ -1297,45 +1305,45 @@ function detectAndroidWebKit() {
 
 					// build dropdown
 					if (typeof(s.dropdown) != 'undefined') {
-									
+
 						$.each(s.dropdown, function (x, d) {
 								if (typeof(d.style) == 'undefined') d.style = '';
-								
+
 								if (d.name == 'separator') {
 									var ul_li = $('<li class="separator_drop"></li>');
 									$(ul).append(ul_li);
 					   			} else {
 									var ul_li = $('<li></li>');
 									var ul_li_a = $('<a href="javascript:void(null);" style="' + d.style + '">' + d.title + '</a>');
-									$(ul_li).append(ul_li_a); 
+									$(ul_li).append(ul_li_a);
 									$(ul).append(ul_li);
-									
+
 									if (typeof(d.func) == 'undefined') $(ul_li_a).click(function() { this.execCommand(d.exec, d.name); }.bind2(this));
-									else $(ul_li_a).click(function(e) { this[d.func](e); }.bind2(this));										
-								}							
+									else $(ul_li_a).click(function(e) { this[d.func](e); }.bind2(this));
+								}
 							}.bind2(this)
 						);
 					} else {
-						a.mouseover(function() { this.hideAllDropDown() }.bind2(this));	
+						a.mouseover(function() { this.hideAllDropDown() }.bind2(this));
 					}
-					
+
 					// observing dropdown
 					if (s.name == 'backcolor' || s.name == 'fontcolor' || typeof(s.dropdown) != 'undefined') {
 						$('#imp_redactor_toolbar_' + this.frameID).after(ul);
-		
+
 						this.hdlHideDropDown = function(e) { this.hideDropDown(e, ul, s.name) }.bind2(this);
 						this.hdlShowDropDown = function(e) { this.showDropDown(e, ul, s.name) }.bind2(this);
-						this.hdlShowerDropDown = function(e) { this.showerDropDown(e, ul, s.name) }.bind2(this);   	
+						this.hdlShowerDropDown = function(e) { this.showerDropDown(e, ul, s.name) }.bind2(this);
 
-						a.click(this.hdlShowDropDown).mouseover(this.hdlShowerDropDown);  							
+						a.click(this.hdlShowDropDown).mouseover(this.hdlShowerDropDown);
 
-						$(document).click(this.hdlHideDropDown);							
+						$(document).click(this.hdlHideDropDown);
 					}
 				}
 	   			}.bind2(this)
-	   		);		
+	   		);
 		},
-		
+
 
 		/**************************************************************************************************************************
 		 * DropDown ***************************************************************************************************************
@@ -1343,7 +1351,7 @@ function detectAndroidWebKit() {
 		showedDropDown: false,
 
 		showDropDown: function(e, ul, name) {
-		
+
 			if (this.showedDropDown) {
 				this.hideAllDropDown();
 			} else {
@@ -1353,11 +1361,11 @@ function detectAndroidWebKit() {
 		},
 
 		showingDropDown: function(e, ul, name) {
-			this.hideAllDropDown();			 	
+			this.hideAllDropDown();
 	   		this.addSelButton(name);
-	   		
+
 			var left = $('#imp_redactor_toolbar_' + this.frameID + ' li.imp_li_btn_' + name).position().left;
-			$(ul).css('left', left + 'px').show();	   		
+			$(ul).css('left', left + 'px').show();
 		},
 
 		showerDropDown: function(e, ul, name) {
@@ -1399,9 +1407,9 @@ function detectAndroidWebKit() {
 		initResize: function(e) {
 			if (e.preventDefault) e.preventDefault();
 			else e.returnValue = false;
-			
+
 			this.splitter = e.target;
-	
+
 			if (this.opts.visual) {
 				this.element_resize = this.frame;
 				this.element_resize.get(0).style.visibility = 'hidden';
@@ -1410,15 +1418,15 @@ function detectAndroidWebKit() {
 				this.element_resize = this.$el;
 				this.element_resize_parent = this.frame;
 			}
-	
+
 			this.stopResizeHdl  = function (e) { this.stopResize(e) }.bind2(this);
 			this.startResizeHdl = function (e) { this.startResize(e) }.bind2(this);
 			this.resizeHdl      =  function (e) { this.resize(e) }.bind2(this);
-	
+
 			$(document).mousedown(this.startResizeHdl);
 			$(document).mouseup(this.stopResizeHdl);
 			$(this.splitter).mouseup(this.stopResizeHdl);
-	
+
 			this.null_point = false;
 			this.h_new      = false;
 			this.h          = this.element_resize.height();
@@ -1431,15 +1439,15 @@ function detectAndroidWebKit() {
 		resize: function(e) {
 			if (e.preventDefault) e.preventDefault();
 			else e.returnValue = false;
-			
+
 			var y = e.pageY;
 			if (this.null_point == false) this.null_point = y;
 			if (this.h_new == false) this.h_new = this.element_resize.height();
-	
+
 			var s_new = (this.h_new + y - this.null_point) - 10;
-	
+
 			if (s_new <= 30) return true;
-	
+
 			if (s_new >= 0) {
 				this.element_resize.get(0).style.height = s_new + 'px';
 				this.element_resize_parent.get(0).style.height = s_new + 'px';
@@ -1451,7 +1459,7 @@ function detectAndroidWebKit() {
 			$(document).unbind('mousedown', this.startResizeHdl);
 			$(document).unbind('mouseup', this.stopResizeHdl);
 			$(this.splitter).unbind('mouseup', this.stopResizeHdl);
-			
+
 			this.element_resize.get(0).style.visibility = 'visible';
 		}
 	};
@@ -1460,14 +1468,14 @@ function detectAndroidWebKit() {
 	String.prototype.isInlineName = function() {
 		var inlineList = new Array("#text", "a", "em", "font", "span", "strong", "u");
 		var theName    = this.toLowerCase();
-		
+
 		for (var i = 0; i < inlineList.length; i++) {
 			if (theName == inlineList[i]) return true
 		}
-		
+
 		return false;
 	};
-	
+
 
 	// bind2
 	Function.prototype.bind2 = function(object) {
@@ -1478,14 +1486,14 @@ function detectAndroidWebKit() {
 	        else if (method == null) throw "Attempt to invoke destructed method reference.";
 	        else { var newArguments = $.makeArray(arguments); return method.apply(object, oldArguments.concat(newArguments)); }
 	    };
-	};	
+	};
 })(jQuery);
 
 // redactor_tabs
 function showRedactorTabs(el, index) {
 	$('#redactor_tabs a').removeClass('redactor_tabs_act');
 	$(el).addClass('redactor_tabs_act');
-	
+
 	$('.redactor_tabs').hide();
 	$('#redactor_tabs' + index).show();
 }
