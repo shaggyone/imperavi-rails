@@ -331,7 +331,7 @@ function detectAndroidWebKit() {
 			$.each(this.opts.paths.stylesheets, $.proxy(function(i, stylesheet) {
 				css += '<link media="all" href="' + stylesheet + '" rel="stylesheet">';
 			}, this)); */
-			css = '<link media="all" href="/assets/imperavi-rails.css">';
+			css = '<link media="all" href="/assets/imperavi-rails/imperavi/wym.css">';
 
 	    	var frameHtml = '<!DOCTYPE html>\n';
 			frameHtml += '<html><head>' + css + '</head><body>';
